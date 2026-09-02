@@ -1,12 +1,11 @@
 import os
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import google.generativeai as genai
 
 app = FastAPI()
 
-# السماح للواجهة بالاتصال بالباك إند (CORS)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -15,7 +14,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# إعداد نموذج الذكاء الاصطناعي
 api_key = os.environ.get("GEMINI_API_KEY")
 if api_key:
   genai.configure(api_key=api_key)
@@ -27,17 +25,21 @@ class ChatRequest(BaseModel):
 
 @app.get("/")
 def home():
-  return {"status": "Vento AI Backend is running successfully!"}
+  return {"status": "Vento AI Backend is Live!"}
 
 
 @app.post("/chat")
 def chat(request: ChatRequest):
   if not api_key:
-    raise HTTPException(status_code=500, detail="GEMINI_API_KEY is missing")
+    return {
+        "reply": "خطأ: لم يتم إيجاد مفتاح GEMINI_API_KEY في Environment Variables على Render."
+    }
 
   try:
+    # تجربة النموذج الافتراضي
     model = genai.GenerativeModel("gemini-1.5-flash")
     response = model.generate_content(request.message)
     return {"reply": response.text}
   except Exception as e:
-    raise HTTPException(status_code=500, detail=str(e))
+    # إرجاع تفاصيل الخطأ مباشرة للواجهة لمعرفتها
+    return {"reply": f"حدث خطأ في الذكاء الاصطناعي: {str(e)}"}
