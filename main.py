@@ -37,7 +37,7 @@ def chat(request: ChatRequest):
 
   try:
     # تجربة النموذج الافتراضي
-    model = genai.GenerativeModel("gemini-1.5-flash")
+    model = genai.GenerativeModel("gemini-2.5-flash")
     response = model.generate_content(request.message)
     return {"reply": response.text}
   except Exception as e:
