@@ -36,7 +36,7 @@ def chat(request: ChatRequest):
   try:
     client = genai.Client(api_key=api_key)
     response = client.models.generate_content(
-        model="gemini-1.5-flash",
+        model="gemini-3.6-flash",
         contents=request.message,
     )
     return {"reply": response.text}
