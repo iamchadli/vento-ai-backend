@@ -35,10 +35,10 @@ def chat(request: ChatRequest):
 
   try:
     client = genai.Client(api_key=api_key)
-    response = client.models.generate_content(
+    interaction = client.interactions.create(
         model="gemini-3.6-flash",
-        contents=request.message,
+        input=request.message,
     )
-    return {"reply": response.text}
+    return {"reply": interaction.output_text}
   except Exception as e:
     return {"reply": f"حدث خطأ أثناء الاتصال بالذكاء الاصطناعي: {str(e)}"}
